@@ -20,9 +20,8 @@ namespace Dec7 {
 
             var noOfPairs = 0;
             var noOfThreeOfAKind = 0;
-            
             foreach (var distinctCard in distinctCards) {
-                var count = cards.Where(card => card ==  distinctCard).Count();
+                var count = cards.Where(card => card == distinctCard && card != 'J').Count();
                 if (count == 2) {
                     noOfPairs++;
                 }
@@ -30,6 +29,9 @@ namespace Dec7 {
                     noOfThreeOfAKind++;
                 }
                 if (count == 4) {
+                    if (NoOfJokers() == 1) {
+                        return HandType.FiveOfAKind;
+                    }
                     return HandType.FourOfAKind;
                 }
                 if (count == 5) {
@@ -37,21 +39,58 @@ namespace Dec7 {
                 }
             }
             if (noOfPairs == 2) {
+                if (NoOfJokers() == 1) {
+                    return HandType.FullHouse;
+                }
                 return HandType.TwoPair;
             }
-            if (noOfPairs == 1 && noOfThreeOfAKind == 0) {
-                return HandType.OnePair;
-            }
             if (noOfPairs == 0 && noOfThreeOfAKind == 1) {
+                if (NoOfJokers() == 2) {
+                    return HandType.FiveOfAKind;
+                }
+                if (NoOfJokers() == 1) {
+                    return HandType.FourOfAKind;
+                }
                 return HandType.ThreeOfAKind;
+            }
+            if (noOfPairs == 1 && noOfThreeOfAKind == 0) {
+                if (NoOfJokers() == 3) {
+                    return HandType.FiveOfAKind;
+                }
+                if (NoOfJokers() == 2) {
+                    return HandType.FourOfAKind;
+                }
+                if (NoOfJokers() == 1) {
+                    return HandType.ThreeOfAKind;
+                }
+                return HandType.OnePair;
+
             }
             if (noOfPairs == 1 && noOfThreeOfAKind == 1) {
                 return HandType.FullHouse;
+            }
+            if (NoOfJokers() == 5) {
+                return HandType.FiveOfAKind;
+            }
+            if (NoOfJokers() == 4) {
+                return HandType.FiveOfAKind;
+            }
+            if (NoOfJokers() == 3) {
+                return HandType.FourOfAKind;
+            }
+            if (NoOfJokers() == 2) {
+                return HandType.ThreeOfAKind;
+            }
+            if (NoOfJokers() == 1) {
+                return HandType.OnePair;
             }
 
             return HandType.HighCard;
         }
 
+        private int NoOfJokers() {
+            return cards.Where(card => card == 'J').Count();
+        }
         public int HandStrength () {
             int sum = 0;
             var multiplier = ((int)Math.Pow(15, 5.0));
@@ -68,7 +107,7 @@ namespace Dec7 {
             }
             switch (card) {
                 case 'T': return 10;
-                case 'J': return 11;
+                case 'J': return 1;
                 case 'Q': return 12;
                 case 'K': return 13;
                 case 'A': return 14;
